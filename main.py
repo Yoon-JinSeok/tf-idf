@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 st.set_page_config(page_title="한국어 TF-IDF 분석기", layout="wide")
 st.title("📝 한국어 TF-IDF 단계별 분석기")
@@ -113,23 +113,38 @@ if st.session_state.df_tf is not None:
 st.divider()
 
 # ──────────────────────────────────────────────
-# 4단계: TF-IDF
+# 4단계: TF-IDF (교과서 방식: log 제외)
+#   IDF(t) = N / df(t)
+#   TF-IDF(t, d) = TF(t, d) × IDF(t)
 # ──────────────────────────────────────────────
-st.header("4단계. TF-IDF 표")
+st.header("4단계. TF-IDF 표 (교과서 방식)")
+st.caption("IDF = 전체 문서 수(N) ÷ 단어가 등장한 문서 수(df)  ·  TF-IDF = TF × IDF")
 
 if st.button("4단계 실행 ▶", key="btn4"):
-    if st.session_state.data1 is None:
-        st.warning("먼저 2단계를 실행해 주세요.")
+    if st.session_state.df_tf is None:
+        st.warning("먼저 3단계를 실행해 주세요.")
     else:
-        try:
-            vec1 = TfidfVectorizer()
-            tfidf = vec1.fit_transform(st.session_state.data1)
-            df1 = pd.DataFrame(tfidf.toarray(), columns=vec1.get_feature_names_out())
-            st.session_state.df_tfidf = df1
-        except ValueError as e:
-            st.error(f"TF-IDF 계산 오류: {e}")
+        tf_df = st.session_state.df_tf           # 3단계에서 만든 TF 표
+        N = len(tf_df)                           # 전체 문서(문장) 수
+        df_count = (tf_df > 0).sum(axis=0)       # 각 단어가 등장한 문서 수(df)
+        idf = N / df_count                       # IDF = N / df  (log 사용 안 함)
+        tfidf_df = tf_df.multiply(idf, axis=1)   # TF × IDF
+
+        st.session_state.df_tfidf = tfidf_df
+        st.session_state.idf_series = idf        # 참고용 IDF 저장
 
 if st.session_state.df_tfidf is not None:
+    # 참고용 IDF 값 표시
+    if st.session_state.get("idf_series") is not None:
+        with st.expander("🔎 단어별 IDF 값 보기"):
+            idf_view = pd.DataFrame({
+                "단어": st.session_state.idf_series.index,
+                "df (등장 문서 수)": (st.session_state.df_tf > 0).sum(axis=0).values,
+                "IDF (N/df)": st.session_state.idf_series.values,
+            })
+            st.dataframe(idf_view, use_container_width=True)
+
+    st.write("**TF-IDF 표:**")
     st.dataframe(
         st.session_state.df_tfidf.style.format("{:.4f}"),
         use_container_width=True,
