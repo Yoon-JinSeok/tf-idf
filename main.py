@@ -118,7 +118,7 @@ st.divider()
 #   TF-IDF(t, d) = TF(t, d) × IDF(t)
 # ──────────────────────────────────────────────
 st.header("4단계. TF-IDF 표 (교과서 방식)")
-st.caption("IDF = 전체 문서 수(N) ÷ 단어가 등장한 문서 수(df)  ·  TF-IDF = TF × IDF")
+st.caption("IDF = 전체 문서 수(N) ÷ 단어가 등장한 문서 수(df),  TF-IDF = TF × IDF")
 
 if st.button("4단계 실행 ▶", key="btn4"):
     if st.session_state.df_tf is None:
