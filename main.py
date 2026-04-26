@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
 st.set_page_config(page_title="한국어 TF-IDF 분석기", layout="wide")
-st.title("📝 한국어 TF-IDF 단계별 분석기")
+st.title("📝 한국어 TF-IDF 단계별 분석기. created by 윤진석")
 
 # ──────────────────────────────────────────────
 # 세션 상태 초기화
