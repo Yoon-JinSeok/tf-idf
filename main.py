@@ -153,9 +153,9 @@ if st.session_state.df_tfidf is not None:
 st.divider()
 
 # ──────────────────────────────────────────────
-# 5단계: 행별 핵심 단어
+# 5단계: 문장별 유용한 정보
 # ──────────────────────────────────────────────
-st.header("5단계. 행별 핵심 단어 (TF-IDF 최댓값)")
+st.header("5단계. 문장벌 유용한 정보 (TF-IDF 최댓값)")
 
 if st.button("5단계 실행 ▶", key="btn5"):
     if st.session_state.df_tfidf is None:
@@ -176,7 +176,7 @@ if st.button("5단계 실행 ▶", key="btn5"):
         result_df = pd.DataFrame(
             {
                 "원본 문장": st.session_state.data,
-                "핵심 단어": key_words.values,
+                "유용한 정보": key_words.values,
             }
         )
         st.dataframe(result_df, use_container_width=True)
