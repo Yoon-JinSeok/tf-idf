@@ -161,9 +161,22 @@ if st.button("5단계 실행 ▶", key="btn5"):
     if st.session_state.df_tfidf is None:
         st.warning("먼저 4단계를 실행해 주세요.")
     else:
-        key_words = st.session_state.df_tfidf.idxmax(axis=1)
-        result_df = pd.DataFrame({
-            "원본 문장": st.session_state.data,
-            "핵심 단어": key_words.values,
-        })
+        # 최댓값이 같은 단어가 여러 개일 경우 모두 추출하는 함수
+        def get_max_keywords(row):
+            max_val = row.max()
+            if max_val == 0:
+                return "없음"
+            # 최댓값과 같은 값을 가진 컬럼(단어)을 모두 리스트로 가져옴
+            top_words = row.index[row == max_val].tolist()
+            return ", ".join(top_words)
+
+        # 행(axis=1) 단위로 함수 적용
+        key_words = st.session_state.df_tfidf.apply(get_max_keywords, axis=1)
+
+        result_df = pd.DataFrame(
+            {
+                "원본 문장": st.session_state.data,
+                "핵심 단어": key_words.values,
+            }
+        )
         st.dataframe(result_df, use_container_width=True)
